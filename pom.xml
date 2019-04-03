@@ -37,10 +37,10 @@
 		<module>parent</module>
 		<module>core-persistence</module>
 		<module>web-rest</module>
+		<module>app</module>
 	</modules>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<github.global.server>github</github.global.server>
 		<github.update.pages.skip>true</github.update.pages.skip>
