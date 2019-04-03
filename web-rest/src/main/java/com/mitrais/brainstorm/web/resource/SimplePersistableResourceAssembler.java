@@ -1,9 +1,9 @@
 package com.mitrais.brainstorm.web.resource;
 
-import com.mitrais.brainstorm.persistence.domain.Persistable;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.data.domain.Persistable;
 import org.springframework.hateoas.LinkBuilder;
 import org.springframework.hateoas.RelProvider;
 import org.springframework.hateoas.Resource;

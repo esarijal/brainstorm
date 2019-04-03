@@ -19,7 +19,7 @@ public class MongoConfig extends AbstractReactiveMongoConfiguration {
 	@DependsOn("embeddedMongoServer")
 	@Override
 	public MongoClient reactiveMongoClient() {
-		int port = environment.getProperty("local.mongo.port", Integer.class);
+		int port = environment.getRequiredProperty("local.mongo.port", Integer.class);
 		return MongoClients.create(String.format("mongodb://localhost:%d", port));
 	}
 
