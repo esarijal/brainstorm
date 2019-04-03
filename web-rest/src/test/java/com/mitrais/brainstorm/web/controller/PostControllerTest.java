@@ -18,11 +18,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -51,8 +53,11 @@ class PostControllerTest {
 	void findByType() throws Exception {
 		Post.Type type = Post.Type.QUESTION;
 		given(postRepository.findByType(any(), any())).willReturn(Flux.just(new Post(
-				Post.Type.QUESTION, "123", "123")));
-		mockMvc.perform(get(PostController.PATH).param("type", type.toString())).andExpect(status().isOk());
+				Post.Type.QUESTION, "1", "1"), new Post(
+				Post.Type.QUESTION, "2", "2")));
+		MvcResult result = mockMvc.perform(get(PostController.PATH).param("type", type.toString()))
+				.andReturn();
+		mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk()).andDo(print());
 	}
 
 	@Test
@@ -61,7 +66,8 @@ class PostControllerTest {
 		String id = UUID.randomUUID().toString();
 		given(postRepository.findById(ArgumentMatchers.<String>any())).willReturn(Mono.just(new Post(
 				Post.Type.QUESTION, "123", "123")));
-		mockMvc.perform(get(controllerPath, id)).andExpect(status().isOk());
+		MvcResult result = mockMvc.perform(get(controllerPath, id)).andReturn();
+		mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk()).andDo(print());
 	}
 
 	@Test
@@ -69,10 +75,10 @@ class PostControllerTest {
 		Post post = new Post(Post.Type.QUESTION, "123", "123");
 		post.setComments(Set.of(new Comment("Great post!")));
 		given(postRepository.save(any())).willReturn(Mono.just(post));
-		mockMvc.perform(post(PostController.PATH)
+		MvcResult result = mockMvc.perform(post(PostController.PATH)
 				.content(mapper.writeValueAsString(post))
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(status().isOk())
-				.andDo(print());
+				.andReturn();
+		mockMvc.perform(asyncDispatch(result)).andExpect(status().isOk()).andDo(print());
 	}
 }

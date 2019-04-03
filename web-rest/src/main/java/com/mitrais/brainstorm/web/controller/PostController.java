@@ -32,23 +32,24 @@ public class PostController {
 	private final PostResourceAssembler postResourceAssembler;
 
 	@PreAuthorize("hasRole('ROLE_CREATE_POST')")
-	@RequestMapping(method = {RequestMethod.POST, RequestMethod.PUT}, produces = MediaTypes.HAL_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ResponseEntity<Resource<Post>> save(@RequestBody Post post){
-		post = postRepository.save(post).block();
-		Resource<Post> resource = postResourceAssembler.toResource(post);
-		return ResponseEntity.ok(resource);
+	@RequestMapping(
+			method = {RequestMethod.POST, RequestMethod.PUT},
+			produces = MediaTypes.HAL_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_UTF8_VALUE
+	)
+	public Mono<ResponseEntity<Resource<Post>>> save(@RequestBody Post post){
+		return postRepository.save(post).map(p ->
+				ResponseEntity.ok(postResourceAssembler.toResource(p))
+		);
 	}
 
 	@GetMapping(produces = MediaTypes.HAL_JSON_VALUE)
-	public ResponseEntity<Resources<Resource<Post>>> findByType(@RequestParam Post.Type type, Pageable pageable) {
-		Iterable<Post> posts = postRepository.findByType(Mono.just(type), pageable).toIterable();
-		return ResponseEntity.ok(postResourceAssembler.toResources(posts));
+	public Mono<ResponseEntity<Resources<Resource<Post>>>> findByType(@RequestParam Post.Type type, Pageable pageable) {
+		return postRepository.findByType(Mono.just(type), pageable).collectList().map(p -> ResponseEntity.ok(postResourceAssembler.toResources(p)));
 	}
 
 	@GetMapping(path = "/{id}", produces = MediaTypes.HAL_JSON_VALUE)
-	public ResponseEntity<Resource<Post>> findById(@PathVariable String id) {
-		Post post = postRepository.findById(id).block();
-		Resource<Post> resource = postResourceAssembler.toResource(post);
-		return ResponseEntity.ok(resource);
+	public Mono<ResponseEntity<Resource<Post>>> findById(@PathVariable String id) {
+		return postRepository.findById(id).map(p -> ResponseEntity.ok(postResourceAssembler.toResource(p)));
 	}
 }
