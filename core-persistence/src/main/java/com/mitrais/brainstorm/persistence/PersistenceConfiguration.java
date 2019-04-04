@@ -1,14 +1,12 @@
 package com.mitrais.brainstorm.persistence;
 
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration which doesn't extends any of spring boot built-in config.
  */
-@SpringBootConfiguration
+@Configuration
 @ComponentScan
-@EnableAutoConfiguration
 public class PersistenceConfiguration {
 }
